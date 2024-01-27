@@ -1,0 +1,10 @@
+# Compiles Source #
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+build/*
+.vscode/*
+
