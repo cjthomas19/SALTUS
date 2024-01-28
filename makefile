@@ -11,7 +11,7 @@ CPPFILES := $(shell find $(SRC_DIR) -type f -name *.cpp)
 
 OBJS :=$(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%, $(CPPFILES:.cpp=.o) $(CFILES:.c=.o))
 
-INC := -I./include
+INC := -I./external/include
 LIB := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 CFLAGS := -std=c++17
 
