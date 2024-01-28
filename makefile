@@ -1,7 +1,7 @@
 CC := g++
 TARGET := final_program.exe
 
-SRC_DIR := source
+SRC_DIR := src
 BUILD_DIR := build
 
 SRCEXT := cpp
@@ -11,9 +11,9 @@ CPPFILES := $(shell find $(SRC_DIR) -type f -name *.cpp)
 
 OBJS :=$(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%, $(CPPFILES:.cpp=.o) $(CFILES:.c=.o))
 
-INC := -I./external/include
+INC := -I./external/include -I./src/
 LIB := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
-CFLAGS := -std=c++17
+CFLAGS := -std=c++17 -g
 
 $(TARGET): $(OBJS)
 	@echo "Linking"
