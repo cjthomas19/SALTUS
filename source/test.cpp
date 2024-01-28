@@ -9,10 +9,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "gfx/shader_s.h"
-#include "gfx/stb_image.h"
-#include "gfx/camera.h"
-#include "gfx/mesh.h"
+#include "renderer/shader_s.h"
+#include "renderer/stb_image.h"
+#include "renderer/camera.h"
+#include "renderer/mesh.h"
 #include "util/perlin.h"
 
 //TODO remove global variables
