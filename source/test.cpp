@@ -15,9 +15,12 @@
 #include "gfx/mesh.h"
 #include "util/perlin.h"
 
+//TODO remove global variables
+// Forward declarations of callback functions
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
+// Should put this in a utility file
 unsigned int loadTexture(const char* path);
 
 // Screen size settings
@@ -26,7 +29,8 @@ unsigned int SCR_HEIGHT = 600;
 
 
 Camera camera(glm::vec3(32.0f,3.0f,32.0f));
-bool firstMouse = true;
+
+// Initialize global variables to store previous mouse coordinates (bad practice)
 float lastX = SCR_WIDTH/2.0;
 float lastY = SCR_HEIGHT/2.0;
 
@@ -42,6 +46,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -55,13 +60,18 @@ int main()
         glfwTerminate();
         return -1;
     }
-    glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR,GLFW_CURSOR_DISABLED);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
+
     if(glfwRawMouseMotionSupported()) {
         glfwSetInputMode(window,GLFW_RAW_MOUSE_MOTION,GLFW_TRUE);
     }
+
+    // Bring window to forefront and disable cursor
+    glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR,GLFW_CURSOR_DISABLED);
+
+    // Set callbacks
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -71,9 +81,11 @@ int main()
         return -1;
     }    
 
+    // Enable depth testing
     glEnable(GL_DEPTH_TEST);
 
-    // Set up vertex shader and buffers
+    // Cube vertices
+    // TODO : move this to another file
     float v_raw[] = {    // texcoords           // normals
         // front
         0.5f,  0.5f, 0.5f,   1.0f, 1.0f, 0.0f,0.0f,1.0f,// top right
@@ -107,6 +119,8 @@ int main()
        -0.5f, -0.5f,-0.5f,   0.0f, 1.0f, 0.0f,-1.0f,0.0f // top left
     };
 
+    // Cube indices
+    // TODO : move this to another file
     unsigned int i_raw[] = {
         0, 1, 3,
         1, 2, 3,
@@ -122,6 +136,8 @@ int main()
         21,22,23
     };
 
+    // Generate Terrain
+    // TODO : move this into a terrain gen class
     constexpr int W = 64;
     constexpr int subdiv = 2;
     constexpr int N = W * subdiv;
@@ -131,10 +147,12 @@ int main()
     std::vector<unsigned int> is((N-1)*(N-1)*6);
     std::vector<Texture> ts {};
 
-    float w0 = 1.0f/W;
-    int octaves = 20;
-    float pers = 0.5;
+    // Perlin parameters: 
+    float w0 = 1.0f/W; // Base Frequency
+    int octaves = 20;  // Octaves
+    float pers = 0.5;  // Persistance
 
+    // Generate heightmap
     for(int z = 0; z < N; ++z) {
         for(int x = 0; x < N; ++x) {
             for (int o = 0; o < octaves; ++o) {
@@ -143,6 +161,7 @@ int main()
         }
     }
 
+    // Convert heightmap to vertices
     for(int iz = 0; iz < N-1; ++iz) {
         for(int ix = 0; ix<N-1; ++ix) {
             float x = (float)ix / subdiv;
@@ -175,13 +194,13 @@ int main()
         }
     }
 
+    // set positions
     glm::vec3 cubePosition = glm::vec3( 0.0f,  0.0f,  0.0f);
     glm::vec3 lightPosition(-10.0f,10.0f,-10.0f);
 
-   // general rendering setup 
+   // General rendering setup 
     
     // LIGHT CUBE
-
     std::vector<Vertex> vertices {};
 
     for(unsigned int i = 0; i < sizeof(v_raw)/sizeof(float); i+=8) {
@@ -189,6 +208,7 @@ int main()
     }
 
     std::vector<unsigned int> indices {};
+
     for(unsigned int i = 0; i < sizeof(i_raw)/sizeof(unsigned int); i++) {
         indices.push_back(i_raw[i]);
     }
@@ -205,7 +225,7 @@ int main()
     Mesh lightMesh = Mesh(vertices,indices,textures);
     Mesh landscape = Mesh(vs,is,ts);
 
-    //Cube Shader stuff
+    //Shader setup 
     Shader cubeShader("shaders/cube.vs","shaders/cube.fs");
     Shader lightCubeShader("shaders/lightcube.vs","shaders/lightcube.fs");
     Shader landShader("shaders/land.vs","shaders/land.fs");
@@ -221,10 +241,12 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {   
+	// Calcuate elapsed time 
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+	// Calculate y position from heightmap
         int x = floor(camera.Position.x*subdiv);
         int z = floor(camera.Position.z*subdiv);
         float sx = camera.Position.x * subdiv - x;
@@ -232,7 +254,7 @@ int main()
         float n0 = interpolate(heights[z][x],heights[z][x+1],sx);
         float n1 = interpolate(heights[z+1][x],heights[z+1][x+1],sx);
 
-        //camera.Position.y = interpolate(n0,n1,sz)+0.2f;
+        camera.Position.y = interpolate(n0,n1,sz)+0.2f;
 
         // input
         // -----
@@ -244,6 +266,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //DRAW CUBE
+	// TODO : move all this into a model-handler class
         cubeShader.use();
         cubeShader.setVec3("light.position",camera.Position);
         cubeShader.setVec3("light.direction",camera.Front);
@@ -330,9 +353,6 @@ int main()
     }
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
-    /*glDeleteVertexArrays(1,&LVAO);
-    glDeleteBuffers(1,&LEBO);*/
 
     cubeMesh.terminate();
     lightMesh.terminate();
@@ -340,8 +360,7 @@ int main()
     return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
+// Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -361,8 +380,8 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(RIGHT,deltaTime);
     }
 }
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
+
+// Whenever the window size changed (by OS or user resize) this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
@@ -372,15 +391,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     SCR_HEIGHT = height;
 }
 
+// Whenever the mouse moves this callback function executes
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
-
-    if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
 
     float xoffset = xpos - lastX;
     float yoffset = ypos - lastY;
@@ -391,6 +405,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     camera.ProcessMouseMovement(xoffset,yoffset);
 }
 
+// TODO : move into utility file
 unsigned int loadTexture(const char* path) {
     unsigned int textureID;
     glGenTextures(1,&textureID);

@@ -1,6 +1,12 @@
 #include <math.h>
 #include "perlin.h"
 
+struct v2 {
+    float x;
+    float y;
+};
+
+
 v2 randomUnitVector(int ix, int iy) {
     const unsigned int w = 8 * sizeof(unsigned int);
     const unsigned int s = w / 2;

@@ -8,6 +8,9 @@
 
 #include "shader_s.h"
 
+// Class that defines a representation of a mesh
+// TODO : write a model loader
+
 struct Vertex {
     glm::vec3 Position;
     glm::vec3 Normal;

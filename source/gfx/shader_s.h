@@ -6,6 +6,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// Shader handler class
+
 class Shader {
 public:
     unsigned int ID;
