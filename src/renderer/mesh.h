@@ -28,7 +28,8 @@ public:
     std::vector<unsigned int> indices;
     std::vector<Texture>      textures;    
     std::string type;
-
+	
+	Mesh();
     Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<Texture>& textures);
     void Draw(Shader &shader);
     void terminate();

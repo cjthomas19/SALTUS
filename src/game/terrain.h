@@ -4,12 +4,12 @@
 #include "renderer/mesh.h"
 
 class TerrainGenerator {
+private:
+    Mesh* landscape;
 public:
     TerrainGenerator();
     ~TerrainGenerator();
     void draw(Shader s);
     void terminate();
-private:
-    Mesh* landscape {};
 };
 #endif

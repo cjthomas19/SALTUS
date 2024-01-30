@@ -13,7 +13,6 @@
 #include "renderer/stb_image.h"
 #include "renderer/camera.h"
 #include "renderer/mesh.h"
-#include "util/perlin.h"
 #include "game/terrain.h"
 
 //TODO remove global variables

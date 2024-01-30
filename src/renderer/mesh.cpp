@@ -7,6 +7,10 @@
 #include "shader_s.h"
 #include "mesh.h"
 
+Mesh::Mesh() {
+
+}	
+ 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<Texture>& textures) {
     this->vertices = vertices;
     this->indices = indices;

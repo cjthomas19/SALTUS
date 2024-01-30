@@ -1,4 +1,5 @@
-CC := g++
+CC = g++
+
 TARGET := final_program.exe
 
 SRC_DIR := src
@@ -10,6 +11,8 @@ CFILES := $(shell find $(SRC_DIR) -type f -name *.c)
 CPPFILES := $(shell find $(SRC_DIR) -type f -name *.cpp)
 
 OBJS :=$(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%, $(CPPFILES:.cpp=.o) $(CFILES:.c=.o))
+
+glad = ./external/glad
 
 INC := -I./external/include -I./src/
 LIB := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
