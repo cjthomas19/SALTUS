@@ -19,6 +19,7 @@
 // Forward declarations of callback functions
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 // Should put this in a utility file
 unsigned int loadTexture(const char* path);
@@ -28,7 +29,7 @@ unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
 
 
-Camera camera(glm::vec3(32.0f,3.0f,32.0f));
+Camera camera(glm::vec3(32.0f,3.0f,60.0f));
 
 // Initialize global variables to store previous mouse coordinates (bad practice)
 float lastX = SCR_WIDTH/2.0;
@@ -72,6 +73,7 @@ int main()
     // Set callbacks
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -349,6 +351,10 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     lastY = ypos;
 
     camera.ProcessMouseMovement(xoffset,yoffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.ProcessMouseScroll(yoffset); 
 }
 
 // TODO : move into utility file
